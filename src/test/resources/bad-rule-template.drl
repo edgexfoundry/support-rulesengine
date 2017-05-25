@@ -1,0 +1,14 @@
+package com.foo.bar;
+package org.edgexfoundry.rules;
+global org.edgexfoundry.engine.CommandExecutor executor;
+global org.slf4j.Logger logger;
+import org.edgexfoundry.domain.core.Event;
+import org.edgexfoundry.domain.core.Reading;
+import java.util.Map;
+rule "${name}" 
+when
+  $e:Event($rlist: readings && device=="${conddevice}")
+then
+executor.fireCommand("${actiondevice}", "${command}", "${body}");
+logger.info("${log}");
+end
