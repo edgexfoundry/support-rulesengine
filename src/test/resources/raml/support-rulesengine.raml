@@ -1,0 +1,62 @@
+#%RAML 0.8
+title: support-rulesengine
+version: "1.0.0"
+baseUri: "http://localhost:48075/api/v1"
+schemas: 
+    - 
+        rule: '{"type":"object","$schema":"http://json-schema.org/draft-03/schema#","description":"EdgeX Support Rules Engine rule","title":"rule","properties":{"name":{"type":"string","required":true,"title":"name"}, "action":{"type":"object","properties":{"device":{"type":"string","required":true,"title":"device"},"command":{"type":"string","required":true,"title":"command"},"body":{"type":"string","required":true,"title":"body"}}}, "condition":{"type":"object","properties":{"device":{"type":"string","required":true,"title":"device"},"checks":{"type":"array","required":false,"title":"checks","items":{"type":"object","properties":{"parameter":{"type":"string","required":false,"title":"parameter"},"operand1":{"type":"string","required":false,"title":"operand1"},"operation":{"type":"string","required":false,"title":"operation"},"operand2":{"type":"string","required":false,"title":"operand2"}}},"uniqueItems":false}}}, "log":{"type":"string","required":false,"title":"log"}}}'
+/rule: 
+    displayName: rules
+    description: example - http://localhost:48075/api/v1/rule
+    post: 
+        description: Add a new rule. ServcieException (HTTP 503) for unknown or unanticipated issues.
+        displayName: add a rule
+        body: 
+            application/json: 
+                schema: rule
+                example: '{"name":"motortoofastsignal", "condition": {"device":"562114e9e4b0385849b96cd8","checks":[ {"parameter":"RPM", "operand1":"Integer.parseInt(value)", "operation":">","operand2":"1200" } ] }, "action" : {"device":"56325f7ee4b05eaae5a89ce1","command":"56325f6de4b05eaae5a89cdc","body":"{\\\"value\\\":\\\"3\\\"}"},"log":"Patlite warning triggered for engine speed too high" }'
+        responses: 
+            "200": 
+                description: boolean indicating success of adding the new rule
+            "503": 
+                description: for unknown or unanticipated issues
+    get: 
+        description: Return all rule names. ServcieException (HTTP 503) for unknown or unanticipated issues.
+        displayName: get all rule names
+        responses: 
+            "200": 
+                description: list of strings
+                body: 
+                    application/json: 
+                        example: '["motortoofastsignal"]'
+            "503": 
+                description: for unknown or unanticipated issues.
+/rule/name/{rulename}: 
+    displayName: rule (by name)
+    description: example - http://localhost:48075/api/v1/rule/name/temptoohi  (where temptoohi is the name of a rule)
+    uriParameters: 
+        rulename: 
+            displayName: rulename
+            description: Unique name of the rule
+            type: string
+            required: true
+            repeat: false
+    delete: 
+        description: Remove the rule designated by name. ServcieException (HTTP 503) for unknown or unanticipated issues. 
+        displayName: remove a rule by name
+        responses: 
+            "200": 
+                description: boolean indicating success of the remove operation
+            "503": 
+                description: for unknown or unanticipated issues.
+/ping: 
+    displayName: Ping Resource
+    description: example - http://localhost:48075/api/v1/ping
+    get: 
+        description: Test service providing an indication that the service is available.
+        displayName: service up check
+        responses: 
+            "200": 
+                description: return value of "pong"
+            "503": 
+                description: for unknown or unanticipated issues

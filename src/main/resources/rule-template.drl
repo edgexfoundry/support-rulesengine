@@ -1,0 +1,20 @@
+package org.edgexfoundry.rules;
+global org.edgexfoundry.engine.CommandExecutor executor;
+global org.edgexfoundry.support.logging.client.EdgeXLogger logger;
+import org.edgexfoundry.domain.core.Event;
+import org.edgexfoundry.domain.core.Reading;
+import java.util.Map;
+rule "${rulename}" 
+when
+  $e:Event($rlist: readings && device=="${conddeviceid}")
+  <#if valuechecks??>
+  <#assign idx = 0>
+  <#list valuechecks as valuecheck>
+  $r${idx}:Reading(name=="${valuecheck.parameter}" && ${valuecheck.operand1} ${valuecheck.operation} ${valuecheck.operand2}) from $rlist
+    <#assign idx = idx + 1>
+  </#list>
+  </#if>
+then
+executor.fireCommand("${actiondeviceid}", "${actioncommandid}", "${commandbody}");
+logger.info("${log}");
+end

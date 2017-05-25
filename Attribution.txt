@@ -1,0 +1,36 @@
+The following open source projects are referenced by Support Rules Engine:
+
+Spring Cloud (Apache 2.0) - http://projects.spring.io/spring-cloud/
+https://github.com/spring-cloud/spring-cloud-release/blob/master/LICENSE.txt
+
+Spring Boot (Apache 2.0) - https://projects.spring.io/spring-boot/
+https://github.com/spring-projects/spring-boot/blob/master/LICENSE.txt
+
+Spring Framework (Apache 2.0) - http://projects.spring.io/spring-framework/
+https://github.com/spring-projects/spring-framework
+
+Log4J (Apache 2.0) - https://logging.apache.org/log4j/2.x/
+https://logging.apache.org/log4j/2.0/license.html
+
+Resteasy, JBoss (Apache 2.0) - http://resteasy.jboss.org/
+https://github.com/resteasy/Resteasy/blob/master/License.html
+
+Freemarker (Apache 2.0) - http://freemarker.org/
+http://freemarker.org/docs/app_license.html
+
+GSON (Apache 2.0) - https://github.com/google/gson
+https://github.com/google/gson/blob/master/LICENSE
+
+Jackson Core (Apache 2.0) - https://github.com/FasterXML/jackson-core/wiki
+https://github.com/FasterXML/jackson-core/wiki
+
+JeroMQ (Mozilla Public License 2.0) - https://github.com/zeromq/jeromq
+https://github.com/zeromq/jeromq/blob/master/LICENSE
+
+
+Junit (EPL 1.0) - http://junit.org/junit4/
+http://junit.org/junit4/license.html
+
+
+Kie Drools (Apache 2.0) - http://www.kiegroup.org/
+https://github.com/kiegroup/drools/blob/master/LICENSE-ASL-2.0.txt
