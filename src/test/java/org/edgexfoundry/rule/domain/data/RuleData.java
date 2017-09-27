@@ -16,26 +16,24 @@
  * @version: 1.0.0
  *******************************************************************************/
 
-package org.edgexfoundry;
+package org.edgexfoundry.rule.domain.data;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.edgexfoundry.rule.domain.Rule;
 
-@EnableScheduling
-@Component
-public class HeartBeat {
+public interface RuleData {
 
-  private static final org.edgexfoundry.support.logging.client.EdgeXLogger logger =
-      org.edgexfoundry.support.logging.client.EdgeXLoggerFactory.getEdgeXLogger(HeartBeat.class);
+  static final String TEST_RULE1 = "Rule1";
+  static final String TEST_RULE2 = "Rule2";
+  static final String TEST_LOG = "slow motor down";
 
-  @Value("${heart.beat.msg}")
-  private String heartBeatMsg;
-
-  @Scheduled(fixedRateString = "${heart.beat.time}")
-  public void pulse() {
-    logger.info(heartBeatMsg);
+  static Rule newTestInstance() {
+    Rule rule = new Rule();
+    rule.setAction(ActionData.newTestInstance());
+    rule.setCondition(ConditionData.newTestCondition());
+    rule.setLog(TEST_LOG);
+    rule.setName(TEST_RULE1);
+    return rule;
   }
-
+  
+  
 }

@@ -43,6 +43,7 @@
 		<java.version>1.8</java.version>
 		<nexusproxy>https://nexus.edgexfoundry.org</nexusproxy>
 		<repobasepath>content/repositories</repobasepath>
+		<checkstyle.plugin.version>2.17</checkstyle.plugin.version>
 	</properties>
 
 	<parent>
@@ -166,6 +167,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+			<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -204,7 +210,6 @@
 			</properties>
 		</profile>
 	</profiles>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -225,6 +230,82 @@
 					<groups>${testcase.groups}</groups>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>google_checks.xml</configLocation>
+							<consoleOutput>true</consoleOutput>
+							<violationSeverity>error</violationSeverity>
+							<skip>false</skip>
+							<linkXRef>false</linkXRef>
+							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+							<outputFile>${project.build.directory}/edgex-checkstyles-result.xml</outputFile>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<nexusUrl>${nexusproxy}</nexusUrl>
+					<stagingProfileId>a004df83a6249</stagingProfileId>
+					<serverId>staging</serverId>
+				</configuration>
+			</plugin>						
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-checkstyle-plugin</artifactId>
+										<versionRange>[2.17,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>			
 	</build>
+	<repositories>
+		<repository>
+			<id>staging</id>
+			<name>EdgeX Staging Repository</name>
+			<url>${nexusproxy}/${repobasepath}/staging</url>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<name>EdgeX Snapshot Repository</name>
+			<url>${nexusproxy}/${repobasepath}/snapshots</url>
+		</repository>
+	</repositories>	
 </project>

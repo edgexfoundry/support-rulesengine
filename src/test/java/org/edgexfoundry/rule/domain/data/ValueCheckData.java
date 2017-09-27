@@ -16,26 +16,23 @@
  * @version: 1.0.0
  *******************************************************************************/
 
-package org.edgexfoundry;
+package org.edgexfoundry.rule.domain.data;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.edgexfoundry.rule.domain.ValueCheck;
 
-@EnableScheduling
-@Component
-public class HeartBeat {
+public interface ValueCheckData {
 
-  private static final org.edgexfoundry.support.logging.client.EdgeXLogger logger =
-      org.edgexfoundry.support.logging.client.EdgeXLoggerFactory.getEdgeXLogger(HeartBeat.class);
+  static final String TEST_PARAM = "rpm";
+  static final String TEST_OP1 = "Integer.parseInt(value)";
+  static final String TEST_OP2 = "900";
+  static final String TEST_OPERATION = ">";
 
-  @Value("${heart.beat.msg}")
-  private String heartBeatMsg;
-
-  @Scheduled(fixedRateString = "${heart.beat.time}")
-  public void pulse() {
-    logger.info(heartBeatMsg);
+  static ValueCheck newTestInstance() {
+    ValueCheck check = new ValueCheck();
+    check.setOperand1(TEST_OP1);
+    check.setOperand2(TEST_OP2);
+    check.setOperation(TEST_OPERATION);
+    check.setParameter(TEST_PARAM);
+    return check;
   }
-
 }

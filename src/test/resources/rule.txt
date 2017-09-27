@@ -4,7 +4,7 @@ global org.slf4j.Logger logger;
 import org.edgexfoundry.domain.core.Event;
 import org.edgexfoundry.domain.core.Reading;
 import java.util.Map;
-rule "testname" 
+rule "Rule1" 
 when
   $e:Event($rlist: readings && device=="56789abc")
   $r0:Reading(name=="rpm" && Integer.parseInt(value) > 900) from $rlist
