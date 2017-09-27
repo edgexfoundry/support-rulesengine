@@ -19,49 +19,32 @@
 package org.edgexfoundry.engine;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.edgexfoundry.controller.CmdClient;
 import org.edgexfoundry.test.category.RequiresNone;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-@Category(RequiresNone.class)
-public class CommandExecutorTest {
-
-  private static final String TEST_DEVICE = "test_device_id";
-  private static final String TEST_CMD = "test_command_id";
-  private static final String TEST_BODY = "test body";
+@Category({RequiresNone.class})
+public class RunEngineTest {
+  
+  private static final String TEST_RESOURCE_FILE_PATH = "./src/test/resources";
+  private static final String TEST_PACKAGE_NAME ="org.edgexfoundry.rules";
+  private static final String TEST_RULE_FILE_EXT=".drl";
 
   @InjectMocks
+  private RuleEngine engine;
+  
+  @Mock
   private CommandExecutor executor;
 
-  @Mock
-  private CmdClient client;
-
   @Before
-  public void setup() {
+  public void setup() throws IllegalAccessException {
     MockitoAnnotations.initMocks(this);
-  }
-
-  @Test
-  public void testFireCommand() {
-    executor.fireCommand(TEST_DEVICE, TEST_CMD, TEST_BODY);
-  }
-
-  @Test
-  public void testFireCommandException() {
-    Mockito.when(client.put(TEST_DEVICE, TEST_CMD, TEST_BODY)).thenThrow(new RuntimeException());
-    executor.fireCommand(TEST_DEVICE, TEST_CMD, TEST_BODY);
-  }
-
-  @Test
-  public void testFireCommandNoClient() throws IllegalAccessException {
-    FieldUtils.writeField(executor, "client", null, true);
-    executor.fireCommand(TEST_DEVICE, TEST_CMD, TEST_BODY);
+    FieldUtils.writeField(engine, "resourceFilePath", TEST_RESOURCE_FILE_PATH, true);
+    FieldUtils.writeField(engine, "packageName", TEST_PACKAGE_NAME, true);
+    FieldUtils.writeField(engine, "ruleFileExtension", TEST_RULE_FILE_EXT, true);
   }
 
 }

@@ -16,26 +16,24 @@
  * @version: 1.0.0
  *******************************************************************************/
 
-package org.edgexfoundry;
+package org.edgexfoundry.rule.domain.data;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import java.util.ArrayList;
+import java.util.List;
 
-@EnableScheduling
-@Component
-public class HeartBeat {
+import org.edgexfoundry.rule.domain.Condition;
+import org.edgexfoundry.rule.domain.ValueCheck;
 
-  private static final org.edgexfoundry.support.logging.client.EdgeXLogger logger =
-      org.edgexfoundry.support.logging.client.EdgeXLoggerFactory.getEdgeXLogger(HeartBeat.class);
+public interface ConditionData {
 
-  @Value("${heart.beat.msg}")
-  private String heartBeatMsg;
+  static final String TEST_DEVICE = "56789abc";
 
-  @Scheduled(fixedRateString = "${heart.beat.time}")
-  public void pulse() {
-    logger.info(heartBeatMsg);
+  static Condition newTestCondition() {
+    Condition condition = new Condition();
+    List<ValueCheck> checks = new ArrayList<>();
+    checks.add(ValueCheckData.newTestInstance());
+    condition.setChecks(checks);
+    condition.setDevice(TEST_DEVICE);
+    return condition;
   }
-
 }

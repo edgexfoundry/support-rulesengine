@@ -16,26 +16,22 @@
  * @version: 1.0.0
  *******************************************************************************/
 
-package org.edgexfoundry;
+package org.edgexfoundry.rule.domain.data;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.edgexfoundry.rule.domain.Action;
 
-@EnableScheduling
-@Component
-public class HeartBeat {
+public interface ActionData {
 
-  private static final org.edgexfoundry.support.logging.client.EdgeXLogger logger =
-      org.edgexfoundry.support.logging.client.EdgeXLoggerFactory.getEdgeXLogger(HeartBeat.class);
+  static final String TEST_BODY = "{\\\"value\\\":\\\"300\\\"}";
+  static final String TEST_CMD = "12345edf";
+  static final String TEST_DEVICE = "56789abc";
 
-  @Value("${heart.beat.msg}")
-  private String heartBeatMsg;
 
-  @Scheduled(fixedRateString = "${heart.beat.time}")
-  public void pulse() {
-    logger.info(heartBeatMsg);
+  static Action newTestInstance() {
+    Action action = new Action();
+    action.setBody(TEST_BODY);
+    action.setCommand(TEST_CMD);
+    action.setDevice(TEST_DEVICE);
+    return action;
   }
-
 }
