@@ -253,17 +253,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<nexusUrl>${nexusproxy}</nexusUrl>
-					<stagingProfileId>a004df83a6249</stagingProfileId>
-					<serverId>staging</serverId>
-				</configuration>
-			</plugin>						
 		</plugins>
 		<pluginManagement>
 			<plugins>
