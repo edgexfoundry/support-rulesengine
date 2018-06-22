@@ -22,7 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.edgexfoundry</groupId>
 	<artifactId>support-rulesengine</artifactId>
-	<version>0.5.0-SNAPSHOT</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<name>EdgeX Foundry Rules Engine Micro Service</name>
 	<description>EdgeX Foundry Rules Engine Micro Service</description>
 
@@ -34,8 +34,8 @@
 		<core-domain.version>0.5.0-SNAPSHOT</core-domain.version>
 		<core-command-client.version>0.5.0-SNAPSHOT</core-command-client.version>
 		<core-exception.version>0.5.0-SNAPSHOT</core-exception.version>
-		<export-domain.version>0.5.0-SNAPSHOT</export-domain.version>
-		<core-test.version>0.5.0-SNAPSHOT</core-test.version>
+		<export-domain.version>0.6.0-SNAPSHOT</export-domain.version>
+		<core-test.version>0.6.0-SNAPSHOT</core-test.version>
 		<support-logging-client.version>0.5.0-SNAPSHOT</support-logging-client.version>
 		<assembley-plugin.version>2.5.5</assembley-plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
