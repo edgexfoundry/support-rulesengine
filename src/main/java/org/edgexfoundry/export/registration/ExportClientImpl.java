@@ -19,6 +19,7 @@
 package org.edgexfoundry.export.registration;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.NotFoundException;
 
 import org.edgexfoundry.domain.export.ExportDestination;
 import org.edgexfoundry.domain.export.ExportFormat;
@@ -91,7 +92,11 @@ public class ExportClientImpl implements ExportClient {
   }
 
   public boolean isRegistered() {
-    return (exportRegistrationByName(clientName) != null);
+    try {
+      return (exportRegistrationByName(clientName) != null);
+    } catch (NotFoundException nfE) {
+      return false;
+    }
   }
 
   public boolean registerRulesEngine() {
