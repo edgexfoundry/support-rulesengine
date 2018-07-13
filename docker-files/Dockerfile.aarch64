@@ -18,11 +18,13 @@
 FROM arm64v8/alpine:3.6
 MAINTAINER Federico Claramonte <fede.claramonte@caviumnetworks.com>
 
+ARG MVN_COMMAND="mvn dependency:copy -q"
+
 RUN apk --update add openjdk8-jre maven
 
 COPY docker-files/pom.xml .
 
-RUN mvn dependency:copy -q
+RUN $MVN_COMMAND
 
 FROM arm64v8/alpine:3.6
 
