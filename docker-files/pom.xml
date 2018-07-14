@@ -18,6 +18,7 @@
     <properties>
         <nexusproxy>https://nexus.edgexfoundry.org</nexusproxy>
         <repobasepath>content/repositories</repobasepath>
+        <stagingpath>staging</stagingpath>
     </properties>
     
     <build>
@@ -49,7 +50,7 @@
 		<repository>
                        <id>staging</id>
                        <name>EdgeX Staging Repository</name>
-                       <url>${nexusproxy}/${repobasepath}/staging</url>
+                       <url>${nexusproxy}/${repobasepath}/${stagingpath}</url>
                </repository>
                <repository>
                        <id>snapshots</id>
