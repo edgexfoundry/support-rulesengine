@@ -48,6 +48,8 @@ public class ZeroMQEventSubscriber {
   private String zeromqAddress;
   @Value("${export.client}")
   private boolean exportClient;
+  @Value("${expect.serializedjava}")
+  private boolean serializedJava;
 
   @Autowired
   RuleEngine engine;
@@ -68,8 +70,13 @@ public class ZeroMQEventSubscriber {
     try {
       while (!Thread.currentThread().isInterrupted()) {
         if (exportClient) {
-          exportString = subscriber.recvStr();
-          event = toEvent(exportString);
+          if (serializedJava) { // supporting legacy Java export distro that shipped Serialized eventString
+            exportString = subscriber.recvStr();
+            event = toEvent(exportString);
+          } else { // supporting new Go export distro that ships JSON
+            exportBytes = subscriber.recv();
+            event = toEvent(exportBytes);
+          }
         } else {
           exportBytes = subscriber.recv();
           event = toEvent(exportBytes);
