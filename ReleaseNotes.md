@@ -1,3 +1,7 @@
+# v1.0 (5/28/2019)
+#Release Notes
+Updated to ignore CBOR data messages.
+
 # v0.2 (10/20/2017)
 # Release Notes
 
