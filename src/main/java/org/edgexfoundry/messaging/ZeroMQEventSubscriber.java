@@ -83,7 +83,7 @@ public class ZeroMQEventSubscriber {
 				zmsg.toArray(parts);
 				logger.debug("Message has " + parts.length + " parts.");
 
-				if (parts.length < 2) {// if the message is not a multi-part message as delivered by core data
+				if (parts.length < 2) {// if the message is not a multi-part message
 					try {
 						node = mapper.readTree(parts[0].getData());
 					} catch (JsonProcessingException jsonE) {  // if can't parse the data from the message, assume it is CBOR
