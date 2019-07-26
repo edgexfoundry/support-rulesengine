@@ -25,7 +25,10 @@ import org.edgexfoundry.engine.RuleEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.zeromq.SocketType;
+import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,7 +44,7 @@ public class ZeroMQEventSubscriber {
 
 	private static final org.edgexfoundry.support.logging.client.EdgeXLogger logger = org.edgexfoundry.support.logging.client.EdgeXLoggerFactory
 			.getEdgeXLogger(ZeroMQEventSubscriber.class);
-	
+
 	public static final String NO_ENVELOPE = "no_envelope";
 	public static final String JSON = "application/json";
 	public static final String CBOR = "application/cbor";
@@ -70,28 +73,39 @@ public class ZeroMQEventSubscriber {
 	public void receive() {
 		getSubscriber();
 		JsonNode node;
-		String msgEnvenlope = null;
+		ZMsg zmsg;
+		ZFrame[] parts;
 		logger.info("Watching for new exported Event messages...");
 		try {
 			while (!Thread.currentThread().isInterrupted()) {
-				msgEnvenlope = subscriber.recvStr();
-				if (!"events".equals(msgEnvenlope)) { // why is every other event "events"?
-					node = mapper.readTree(msgEnvenlope);
-					switch (payloadType(node)) {
-					case NO_ENVELOPE:
-						processEvent(node);
-						break;
-					case JSON:
-						processJsonEvent(node);
-						break;
-					case CBOR:
-						processCborEvent(node);
-					default:
-						logger.error("Unknown payload type received");
+				zmsg = ZMsg.recvMsg(subscriber);
+				parts = new ZFrame[zmsg.size()];
+				zmsg.toArray(parts);
+				logger.debug("Message has " + parts.length + " parts.");
+
+				if (parts.length < 2) {// if the message is not a multi-part message as delivered by core data
+					try {
+						node = mapper.readTree(parts[0].getData());
+					} catch (JsonProcessingException jsonE) {  // if can't parse the data from the message, assume it is CBOR
+						processCborEvent(parts[0]);
 						break;
 					}
-				} else
-					logger.debug("Received 'events' string");
+				} else // if the message is multi-part message
+					node = mapper.readTree(parts[1].getData());
+				switch (payloadType(node)) {
+				case NO_ENVELOPE:
+					processEvent(node);
+					break;
+				case JSON:
+					processJsonEvent(node);
+					break;
+				case CBOR:
+					processCborEvent(node);
+					break;
+				default:
+					logger.error("Unknown payload type received");
+					break;
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Unable to receive messages via ZMQ: " + e.getMessage());
@@ -102,7 +116,9 @@ public class ZeroMQEventSubscriber {
 		subscriber = null;
 		// try to restart
 		logger.debug("Attempting restart of Event message watch.");
+
 		receive();
+
 	}
 
 	private String payloadType(JsonNode node) throws JsonProcessingException, IOException {
@@ -132,7 +148,7 @@ public class ZeroMQEventSubscriber {
 	private ZMQ.Socket getSubscriber() {
 		if (subscriber == null) {
 			try {
-				subscriber = context.socket(ZMQ.SUB);
+				subscriber = context.socket(SocketType.SUB);
 				subscriber.connect(zeromqAddress + ":" + zeromqAddressPort);
 				subscriber.subscribe("".getBytes());
 			} catch (Exception e) {
@@ -149,21 +165,21 @@ public class ZeroMQEventSubscriber {
 		logger.debug("Event: " + event);
 		executeOnEvent(event);
 	}
-	
-	private void processEvent(JsonNode node) throws IOException {
+
+	private void processEvent(JsonNode node) {
 		logger.info("Event received");
 		Event event = mapper.convertValue(node, Event.class);
 		logger.debug("Event: " + event);
 		executeOnEvent(event);
 	}
-	
+
 	private void executeOnEvent(Event event) {
 		engine.execute(event);
-		logger.info("Event sent to rules engine for device id:  " + event.getDevice());		
+		logger.info("Event sent to rules engine for device id:  " + event.getDevice());
 	}
 
-	private void processCborEvent(JsonNode node) {
-		logger.info("CBOR is unsupported in the rules engine at this time; message being ignored");
+	private void processCborEvent(Object data) {
+		logger.info("CBOR received.  CBOR is unsupported in the rules engine at this time; message being ignored");
 	}
 
 	private static Event toEvent(byte[] eventBytes) throws IOException {
