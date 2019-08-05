@@ -22,7 +22,7 @@
 		<resteasy.version>3.0.13.Final</resteasy.version>
 		<zeromq.version>0.5.1</zeromq.version>
 		<core-domain.version>0.5.0-SNAPSHOT</core-domain.version>
-		<core-command-client.version>0.2.0-SNAPSHOT</core-command-client.version>
+		<core-command-client.version>0.2.0</core-command-client.version>
 		<core-exception.version>0.5.0-SNAPSHOT</core-exception.version>
 		<export-domain.version>0.5.0-SNAPSHOT</export-domain.version>
 		<core-test.version>0.5.0-SNAPSHOT</core-test.version>
