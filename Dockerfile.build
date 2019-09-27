@@ -1,0 +1,6 @@
+FROM maven:3.6.2
+
+RUN apt-get update && \
+    apt-get install -y make
+
+COPY --from=docker:latest /usr/local/bin/docker /usr/local/bin/docker

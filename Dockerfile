@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2016-2017 Cavium.
+# Copyright 2016-2017 Dell Inc.
 # Copyright 2018 Dell Technologies, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,8 @@
 #
 ###############################################################################
 # Docker image for Rules Engine micro service 
-FROM arm64v8/alpine:3.6
-MAINTAINER Federico Claramonte <fede.claramonte@caviumnetworks.com>
-
-RUN apk --update add openjdk8-jre maven
-
-#add libnss3.so to deal with IO Exception in ARM build
-RUN apk add --no-cache nss
-
-ARG MVN_COMMAND="mvn dependency:copy -q"
-
-COPY docker-files/pom.xml .
-
-RUN $MVN_COMMAND
-
-FROM arm64v8/alpine:3.6
+# FROM java:8
+FROM alpine:3.6
 
 RUN apk --update add openjdk8-jre
 
@@ -41,7 +28,7 @@ ENV APP=support-rulesengine.jar
 ENV APP_PORT=48075
 
 #copy JAR and property files to the image
-COPY --from=0 *.jar $APP_DIR/$APP
+COPY target/*.jar $APP_DIR/$APP
 COPY docker-files/*.properties $APP_DIR/
 #copy drool template to templates location
 COPY docker-files/*.drl $TEMPLATE_DIR/
