@@ -58,6 +58,7 @@ log/
 target/
 /.apt_generated/
 .mvn/
+.m2/
 mvnw
 mvnw.cmd
 
