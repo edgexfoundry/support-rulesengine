@@ -44,54 +44,68 @@ pipeline {
             parallel {
                 stage('Build amd64') {
                     agent {
-                        dockerfile {
-                            filename 'Dockerfile.build'
-                            label 'centos7-docker-4c-2g'
-                            args '-v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/root -w /root -u 0:0 --privileged'
-                        }
+                        label 'centos7-docker-4c-2g'
                     }
-                    stages {
-                        stage('Test') {
-                            steps {
-                                sh 'make test'
+                    stages { 
+                        stage('Phase 1') {
+                            agent {
+                                dockerfile {
+                                    filename 'Dockerfile.build'
+                                    label 'centos7-docker-4c-2g'
+                                    args '-v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/root -w /root -u 0:0 --privileged'
+                                    reuseNode true
+                                }
                             }
-                        }
-                        stage('Maven Package') {
-                            when { expression { edgex.isReleaseStream() } }
+                            stages {
+                                stage('Test') {
+                                    steps {
+                                        sh 'make test'
+                                    }
+                                }
+                                stage('Maven Package') {
+                                    when { expression { edgex.isReleaseStream() } }
 
-                            steps {
-                                sh 'make build'
-                            }
-                        }
-                        stage('Docker Build') {
-                            when { expression { edgex.isReleaseStream() } }
+                                    steps {
+                                        sh 'make build'
+                                    }
+                                }
+                                stage('Docker Build') {
+                                    when { expression { edgex.isReleaseStream() } }
 
-                            steps {
-                                unstash 'semver'
+                                    steps {
+                                        unstash 'semver'
 
-                                sh 'echo Currently Building version: `cat ./VERSION`'
+                                        sh 'echo Currently Building version: `cat ./VERSION`'
 
-                                script {
-                                    // This is the main docker image that will be pushed
-                                    // BASE image = image from above
-                                    image_amd64 = docker.build(
-                                        'docker-support-rulesengine',
-                                        "--label 'git_sha=${env.GIT_COMMIT}' ."
-                                    )
+                                        script {
+                                            // This is the main docker image that will be pushed
+                                            // BASE image = image from above
+                                            image_amd64 = docker.build(
+                                                'docker-support-rulesengine',
+                                                "--label 'git_sha=${env.GIT_COMMIT}' ."
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
-                        stage('Docker Push') {
-                            when { expression { edgex.isReleaseStream() } }
 
-                            steps {
-                                script {
-                                    edgeXDockerLogin(settingsFile: env.MVN_SETTINGS)
+                        // this should be back on the original node that has the tools required to run the login script
+                        stage('Phase 2') {
+                            stages {
+                                stage('Docker Push') {
+                                    when { expression { edgex.isReleaseStream() } }
 
-                                    docker.withRegistry("https://${env.DOCKER_REGISTRY}:10004") {
-                                        image_amd64.push("${env.SEMVER_BRANCH}")
-                                        image_amd64.push("${env.VERSION}")
-                                        image_amd64.push("${env.GIT_COMMIT}-${env.VERSION}")
+                                    steps {
+                                        script {
+                                            edgeXDockerLogin(settingsFile: env.MVN_SETTINGS)
+
+                                            docker.withRegistry("https://${env.DOCKER_REGISTRY}:10004") {
+                                                image_amd64.push("${env.SEMVER_BRANCH}")
+                                                image_amd64.push("${env.VERSION}")
+                                                image_amd64.push("${env.GIT_COMMIT}-${env.VERSION}")
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -100,54 +114,67 @@ pipeline {
                 }
                 stage('Build arm64') {
                     agent {
-                        dockerfile {
-                            filename 'Dockerfile.build'
-                            label 'ubuntu18.04-docker-arm64-4c-2g'
-                            args '-v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/root -w /root -u 0:0 --privileged'
-                        }
+                        label 'ubuntu18.04-docker-arm64-4c-2g'
                     }
                     stages {
-                        stage('Test') {
-                            steps {
-                                sh 'make test'
+                        stage('Phase 1') {
+                            agent {
+                                dockerfile {
+                                    filename 'Dockerfile.build'
+                                    label 'ubuntu18.04-docker-arm64-4c-2g'
+                                    args '-v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/root -w /root -u 0:0 --privileged'
+                                    reuseNode true
+                                }
                             }
-                        }
-                        stage('Maven Package') {
-                            when { expression { edgex.isReleaseStream() } }
+                            stages {
+                                stage('Test') {
+                                    steps {
+                                        sh 'make test'
+                                    }
+                                }
+                                stage('Maven Package') {
+                                    when { expression { edgex.isReleaseStream() } }
 
-                            steps {
-                                sh 'make build'
-                            }
-                        }
-                        stage('Docker Build') {
-                            when { expression { edgex.isReleaseStream() } }
+                                    steps {
+                                        sh 'make build'
+                                    }
+                                }
+                                stage('Docker Build') {
+                                    when { expression { edgex.isReleaseStream() } }
 
-                            steps {
-                                unstash 'semver'
+                                    steps {
+                                        unstash 'semver'
 
-                                sh 'echo Currently Building version: `cat ./VERSION`'
+                                        sh 'echo Currently Building version: `cat ./VERSION`'
 
-                                script {
-                                    // This is the main docker image that will be pushed
-                                    // BASE image = image from above
-                                    image_arm64 = docker.build(
-                                        'docker-support-rulesengine-arm64',
-                                        "--label 'git_sha=${env.GIT_COMMIT}' ."
-                                    )
+                                        script {
+                                            // This is the main docker image that will be pushed
+                                            // BASE image = image from above
+                                            image_arm64 = docker.build(
+                                                'docker-support-rulesengine-arm64',
+                                                "--label 'git_sha=${env.GIT_COMMIT}' ."
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
-                        stage('Docker Push') {
-                            when { expression { edgex.isReleaseStream() } }
 
-                            steps {
-                                script {
-                                    edgeXDockerLogin(settingsFile: env.MVN_SETTINGS)
+                        stage('Phase 2') {
+                            stages {
+                                stage('Docker Push') {
+                                when { expression { edgex.isReleaseStream() } }
 
-                                    docker.withRegistry("https://${env.DOCKER_REGISTRY}:10004") {
-                                        image_arm64.push("${env.SEMVER_BRANCH}")
-                                        image_arm64.push("${env.VERSION}")
-                                        image_arm64.push("${env.GIT_COMMIT}-${env.VERSION}")
+                                steps {
+                                    script {
+                                        edgeXDockerLogin(settingsFile: env.MVN_SETTINGS)
+
+                                        docker.withRegistry("https://${env.DOCKER_REGISTRY}:10004") {
+                                            image_arm64.push("${env.SEMVER_BRANCH}")
+                                            image_arm64.push("${env.VERSION}")
+                                            image_arm64.push("${env.GIT_COMMIT}-${env.VERSION}")
+                                            }
+                                        }
                                     }
                                 }
                             }
