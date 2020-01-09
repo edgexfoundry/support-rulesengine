@@ -98,7 +98,7 @@ pipeline {
 
                                     steps {
                                         script {
-                                            edgeXDockerLogin(settingsFile: env.MVN_SETTINGS)
+                                            edgeXDockerLogin(settingsFile: 'support-rulesengine-settings')
 
                                             docker.withRegistry("https://${env.DOCKER_REGISTRY}:10004") {
                                                 image_amd64.push("${env.SEMVER_BRANCH}")
@@ -167,7 +167,7 @@ pipeline {
 
                                 steps {
                                     script {
-                                        edgeXDockerLogin(settingsFile: env.MVN_SETTINGS)
+                                        edgeXDockerLogin(settingsFile: 'support-rulesengine-settings')
 
                                         docker.withRegistry("https://${env.DOCKER_REGISTRY}:10004") {
                                             image_arm64.push("${env.SEMVER_BRANCH}")
@@ -191,7 +191,6 @@ pipeline {
                 sh 'echo v${VERSION}'
                 edgeXSemver('tag')
                 edgeXInfraLFToolsSign(command: 'git-tag', version: 'v${VERSION}')
-                edgeXSemver('push')
             }
         }
 
